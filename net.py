@@ -2,6 +2,7 @@ import numpy as np
 from main import load_random_image
 import cv2
 import scipy.signal
+import matplotlib.pyplot as plt
 
 class ConvLayer:
 
@@ -46,14 +47,32 @@ class MaxPoolLayer:
     def backward(self):
         pass
 
+def forward(input, layers):
+    for layer in layers:
+        input = layer.forward(input)
+    return input
+
 if __name__ == "__main__":
 
     img = cv2.imread("flower.jpg", cv2.COLOR_BGR2RGB)
     img = cv2.resize(img, (200, 200))
+
+    plt.imshow(img)
+    plt.show()
+
     img = np.array(img).reshape((3, 200, 200))
 
-    layer1 = ConvLayer(img.shape, n_kernels=10, kernel_size=3)
-    layer2 = ConvLayer(layer1.output_shape, n_kernels=20, kernel_size=3)
 
-    output = layer2.forward(layer1.forward(img))
+    layer1 = ConvLayer(img.shape, n_kernels=3, kernel_size=3)
+    layer2 = ConvLayer(layer1.output_shape, n_kernels=3, kernel_size=3)
+
+    output = forward(img, [layer1, layer2])
+
     print(output.shape)
+
+    output = output.reshape(list(reversed(output.shape)))
+
+    print(output.shape)
+
+    plt.imshow(output)
+    plt.show()
