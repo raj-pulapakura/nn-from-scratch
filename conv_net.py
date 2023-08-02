@@ -1,5 +1,5 @@
 import numpy as np
-from main import load_random_image
+from testing import load_random_image
 import cv2
 import scipy.signal
 import matplotlib.pyplot as plt
