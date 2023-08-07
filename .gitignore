@@ -1,4 +1,3 @@
-mnist_test.csv
-mnist_train.csv
+data
 env
 __pycache__
