@@ -9,13 +9,15 @@ def load_mnist_train():
 
 
 
-
 if __name__ == "__main__":
 
-    x = np.array([5, 7, 1])
+    # x = np.array([5, 7, 1])
 
-    s = softmax(x)
-    print(s)
+    # s = softmax(x)
+    # print(s)
 
-    s_prime = softmax_prime(x)
-    print(s_prime)
+    # s_prime = softmax_prime(x)
+    # print(s_prime)
+
+    x = [1, 2, 3, 4, 5]
+    print(x[::-1])

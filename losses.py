@@ -12,4 +12,4 @@ def cross_entropy(y_pred: np.ndarray, y_true: np.ndarray):
     return (-1) * np.sum( y_true * np.log(y_pred) )
 
 def cross_entropy_prime(y_pred: np.ndarray, y_true: np.ndarray):
-    return (-1) * ( y_true / y_pred )
+    return (-1) * (y_true / y_pred)

@@ -8,9 +8,9 @@ class Layer:
         self.name = name
 
     def forward(self, input: np.ndarray):
-        pass
+        self.input = input
 
-    def backward(self):
+    def backward(self, output_gradient: np.ndarray, learning_rate: float):
         pass
 
 
@@ -22,12 +22,15 @@ class Dense(Layer):
         self.weights = np.random.rand(output_size, input_size)
         self.bias = np.random.rand(output_size, 1)
         super().__init__(name)
-
+ 
     def forward(self, input: np.ndarray):
+        self.input = input
         return np.dot(self.weights, input) + self.bias
     
-    def backward(self):
-        pass
+    def backward(self, output_gradient: np.ndarray, learning_rate: float):
+        grad_weights = output_gradient @ self.input.T
+        grad_bias = output_gradient
+        self.weights
 
 
 class Activation(Layer):
@@ -42,9 +45,6 @@ class Activation(Layer):
     def forward(self, input: np.ndarray):
         self.input = input
         return self.activation(input)
-
-    def backward(self):
-        pass
 
 
 class ReLU(Activation):
@@ -69,24 +69,29 @@ class Softmax(Activation):
             return e / np.sum(e)
 
         def softmax_prime(x: np.ndarray):
+            """
+            Calculate Jacobian matrix for Softmax (all partial derivatives with respect to all inputs)
+            """
             s = softmax(x)
-            prime = []
-            for j, xj in enumerate(x):
-                p = 0
-                for i, si in enumerate(s):
-                    deriv = 0
+            n = len(x)
+            jac = np.zeros((n, n))
+            for i in range(n):
+                for j in range(n):
                     if i == j:
-                        deriv = si * (1 - si)
+                        jac[i][j] = s[i] * (1 - s[i])
                     else:
-                        deriv = -si * s[j]
-                    p += deriv
-                prime.append(p)
-            return np.array(prime)
+                        jac[i][j] = (-1) * s[i] * s[j]
+            return jac
 
         super().__init__(softmax, softmax_prime, name)
 
-    def backward(self):
-        return self.activation_prime(self.input)
+    def backward(self, output_gradient: np.ndarray):
+        """
+        The derivative of the softmax function is a Jacobian matrix.
+        To calculate the derivative of the loss with respect to the inputs of the softmax, matrix multiply the Jacobian (derivative of the Softmax) with the derivative of the Cross entropy loss with respect to the outputs of the network.
+        This result should be the same as (y_pred - y_true)
+        """
+        return self.activation_prime(self.input).T @ output_gradient
 
 
 if __name__ == "__main__":
@@ -117,20 +122,12 @@ if __name__ == "__main__":
         output = layer.forward(output)
         print(f"Layer {layer.name} output:  {output.shape}")
 
-    # print("Output")
-    # print(output)
-
-    # print("Ground truth")
-    # print(y)
-
     # calculate loss
     loss = cross_entropy(output, y)
     print(f"Cross Entropy Loss: {loss}")
 
     # back prop
-    loss_derivative = cross_entropy_prime(output, y)
+    grad = cross_entropy_prime(output, y) # derivative of the loss with respect to y_pred
 
-    softmax_derivative = layers[3].backward()
-
-    print(loss_derivative * softmax_derivative)
-    print(output - y)
+    for layer in layers[::-1]:
+        grad = layer.backward(grad)
