@@ -30,7 +30,9 @@ class Dense(Layer):
     def backward(self, output_gradient: np.ndarray, learning_rate: float):
         grad_weights = output_gradient @ self.input.T
         grad_bias = output_gradient
-        self.weights
+        self.weights -= learning_rate * grad_weights
+        self.bias -= learning_rate * grad_bias
+        return self.weights.T @ output_gradient # return the derivative of the loss with respect to inputs
 
 
 class Activation(Layer):
@@ -56,6 +58,7 @@ class ReLU(Activation):
         relu = lambda x: np.maximum(x, 0)
         relu_prime = lambda x: x > 0
         super().__init__(relu, relu_prime, name)
+
 
 
 class Softmax(Activation):
@@ -85,7 +88,7 @@ class Softmax(Activation):
 
         super().__init__(softmax, softmax_prime, name)
 
-    def backward(self, output_gradient: np.ndarray):
+    def backward(self, output_gradient: np.ndarray, learning_rate: float):
         """
         The derivative of the softmax function is a Jacobian matrix.
         To calculate the derivative of the loss with respect to the inputs of the softmax, matrix multiply the Jacobian (derivative of the Softmax) with the derivative of the Cross entropy loss with respect to the outputs of the network.
@@ -129,5 +132,8 @@ if __name__ == "__main__":
     # back prop
     grad = cross_entropy_prime(output, y) # derivative of the loss with respect to y_pred
 
-    for layer in layers[::-1]:
-        grad = layer.backward(grad)
+    learning_rate = 0.01
+
+    for layer in layers[::-1][0:2]:
+        print(f"Back prop layer: {layer.name}")
+        grad = layer.backward(grad, learning_rate)
