@@ -4,7 +4,6 @@ import numpy as np
 def mse(y_pred: np.ndarray, y_true: np.ndarray):
     return ( y_pred - y_true ) ** 2
 
-
 def mse_prime(y_pred: np.ndarray, y_true: np.ndarray):
     return 2 * ( y_pred - y_true )
 

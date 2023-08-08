@@ -101,12 +101,17 @@ class Softmax(Activation):
         return self.activation_prime(self.input).T @ output_gradient
 
 
+def softmax(x: np.ndarray):
+    # x = x - np.max(x) # this is to avoid high values (it doesn't change the outputs)
+    e = np.exp(x)
+    s = e / np.sum(e)
+    return s
+
 if __name__ == "__main__":
     layers = [
         Dense(784, 16, "Input Dense"), # input = (784, 1) | output = (16, 1)
         ReLU("Relu"), # input = (16, 1) | output = (16, 1)
         Dense(16, 10, "Hidden Dense"), # input = (16, 1) | output = (10, 1)
-        Softmax("Softmax"), # input = (10, 1) | output = (10, 1)
     ]
 
     # load data
@@ -121,7 +126,7 @@ if __name__ == "__main__":
 
     for e in range(epochs):
 
-        print(f"Epoch {e}")
+        # print(f"Epoch {e}")
 
         total_loss = 0
 
@@ -136,14 +141,19 @@ if __name__ == "__main__":
             for layer in layers:
                 output = layer.forward(output)
             
+            # softmax
+            y_pred = softmax(output)
+            print(np.sum(y_pred))
+
             # calculate loss
-            total_loss += cross_entropy(output, y)
+            loss = cross_entropy(y_pred, y)
+            # print(loss)
 
             # back prop
-            grad = cross_entropy_prime(output, y) # derivative of the loss with respect to y_pred
+            grad = y_pred - y # derivative of the loss with respect to outputs of last dense layer
             learning_rate = 0.01
 
             for layer in layers[::-1]:
                 grad = layer.backward(grad, learning_rate)
 
-        print(f"Epoch Avg loss: {total_loss/n}")
+        # print(f"Epoch Avg loss: {total_loss/n}")
