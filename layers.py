@@ -19,10 +19,9 @@ class Dense(Layer):
     Fully Connected Layer of Neurons
     """
     def __init__(self, input_size, output_size, name="Dense"):
-        self.weights = np.random.rand(output_size, input_size)
-        self.bias = np.random.rand(output_size, 1)
+        self.weights = np.random.uniform(-1, 1, (output_size, input_size))
+        self.bias = np.zeros((output_size, 1))
         super().__init__(name)
- 
     def forward(self, input: np.ndarray):
         self.input = input
         return np.dot(self.weights, input) + self.bias
@@ -59,6 +58,8 @@ class ReLU(Activation):
         relu_prime = lambda x: x > 0
         super().__init__(relu, relu_prime, name)
 
+    def backward(self, output_gradient: np.ndarray, learning_rate: float):
+        return output_gradient  * self.activation_prime(self.input)
 
 
 class Softmax(Activation):
@@ -68,14 +69,17 @@ class Softmax(Activation):
     """
     def __init__(self, name):
         def softmax(x: np.ndarray):
+            x = x - np.max(x) # this is to avoid high values (it doesn't change the outputs)
             e = np.exp(x)
-            return e / np.sum(e)
+            s = e / np.sum(e)
+            s = s + 1e-9 # make sure there are no zeros
+            return s
 
         def softmax_prime(x: np.ndarray):
             """
             Calculate Jacobian matrix for Softmax (all partial derivatives with respect to all inputs)
             """
-            s = softmax(x)
+            s = softmax(x).flatten()
             n = len(x)
             jac = np.zeros((n, n))
             for i in range(n):
@@ -107,33 +111,39 @@ if __name__ == "__main__":
 
     # load data
     labels, mnist = load_mnist_train()
-    
+    n = len(mnist)
+
     # transform data
-    mnist = mnist.T
+    mnist = mnist.T / 255
     labels = np.eye(len(np.unique(labels)))[labels].T
 
-    # get sample
-    X = mnist[:, 0:1]
-    y = labels[:, 0:1]
+    epochs = 10
 
-    # scale sample
-    X /= 255
+    for e in range(epochs):
 
-    # forward prop
-    output = X
-    for layer in layers:
-        output = layer.forward(output)
-        print(f"Layer {layer.name} output:  {output.shape}")
+        print(f"Epoch {e}")
 
-    # calculate loss
-    loss = cross_entropy(output, y)
-    print(f"Cross Entropy Loss: {loss}")
+        total_loss = 0
 
-    # back prop
-    grad = cross_entropy_prime(output, y) # derivative of the loss with respect to y_pred
+        for i in range(n):
 
-    learning_rate = 0.01
+            # get sample
+            X = mnist[:, i:i+1]
+            y = labels[:, i:i+1]
 
-    for layer in layers[::-1][0:2]:
-        print(f"Back prop layer: {layer.name}")
-        grad = layer.backward(grad, learning_rate)
+            # forward prop
+            output = X
+            for layer in layers:
+                output = layer.forward(output)
+            
+            # calculate loss
+            total_loss += cross_entropy(output, y)
+
+            # back prop
+            grad = cross_entropy_prime(output, y) # derivative of the loss with respect to y_pred
+            learning_rate = 0.01
+
+            for layer in layers[::-1]:
+                grad = layer.backward(grad, learning_rate)
+
+        print(f"Epoch Avg loss: {total_loss/n}")
