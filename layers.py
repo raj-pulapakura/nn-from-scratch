@@ -70,6 +70,8 @@ class Dense(Layer):
         name : int
             Name of the layer, defaults to "Dense".
         """
+        self.input_size = input_size
+        self.output_size = output_size
         self.weights = np.random.randn(output_size, input_size) * np.sqrt(2/input_size)
         self.bias = np.zeros((output_size, 1))
         super().__init__(name)

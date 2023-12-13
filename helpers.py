@@ -1,5 +1,6 @@
 import numpy as np
 import mnist
+from layers import Layer, Dense, Activation
 
 def load_mnist()->tuple[np.ndarray]:
     """
@@ -102,3 +103,27 @@ def cross_entropy(y_pred: np.ndarray, y_true: np.ndarray)->int:
     log_probs =  (-1) * np.sum( y_true * np.log(y_pred+1e-7) )
     loss = log_probs / m
     return float(loss)
+
+
+def print_architecture(layers: list[Layer]):
+    """
+    Prints neural network architecture in a single line.
+
+    Parameters
+    ----------
+
+    layers : list[Layer]
+        List of layers which inherit from Layer.
+    """
+    for i, layer in enumerate(layers):
+        if i == 0:
+            if isinstance(layer, Dense):
+                print(f"Input ({layer.input_size}, m) --> Dense ({layer.output_size}, m) --> ", end="")
+            else:
+                print(f"{layer.name} --> ", end="")
+        else:
+            if isinstance(layer, Dense):
+                print(f"Dense ({layer.output_size}, m) --> ", end="")
+            else:
+                print(f"{layer.name} --> ", end="")
+    print("Output")
