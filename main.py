@@ -7,8 +7,9 @@ from tabulate import tabulate
 if __name__ == "__main__":
 
     delay = 1
-
+    print()
     print("❤️  Neural Network from Scratch with NumPy. Enjoy 🤗")
+    print("-----------------------------------------------------")
     sleep(delay)
 
     # DEFINE LAYERS
@@ -18,7 +19,8 @@ if __name__ == "__main__":
         Dense(16, 10, "Output"), # input = (16, BATCH) | output = (10, BATCH)
     ]
 
-    print("\n🏫  Architecture\n")
+    print("\n🏫  Architecture")
+    print("----------------\n")
     sleep(delay)
     print_architecture(layers)
     print()
@@ -36,7 +38,8 @@ if __name__ == "__main__":
     trainN = train_X.shape[-1]
     valN = val_X.shape[-1]
 
-    print("🔢  MNIST Data\n")
+    print("🔢  MNIST Data")
+    print("--------------\n")
     sleep(delay)
     print(f"Training images:  {train_X.shape}")
     sleep(delay)
@@ -53,7 +56,8 @@ if __name__ == "__main__":
     EPOCHS = 10
     LR = 0.01
 
-    print("⏱️  Hyperparameters\n")
+    print("⏱️  Hyperparameters")
+    print("-------------------\n")
     sleep(delay)
     print(f"Batch Size: {BATCH_SIZE}")
     sleep(delay)
@@ -63,11 +67,11 @@ if __name__ == "__main__":
     print()
     sleep(delay)
 
-    print("✋ ON YOUR MARKS!")
+    print("✋  ON YOUR MARKS!")
     sleep(delay+1)
     print("✌️  GET SET!")
     sleep(delay+1)
-    print("🏃 TRAIN!")
+    print("🏃  TRAIN!")
     print()
     sleep(delay+1)
 
@@ -131,13 +135,14 @@ if __name__ == "__main__":
         val_acc = val_acc / ( valN / BATCH_SIZE ) 
         print(f"Validation Loss: {round(val_loss, 5)} | Validation Accuracy: {round(val_acc, 3)}")
 
-    print("\n🏁 Training complete")
+    print("\n🏁  Training complete")
     print()
     sleep(delay)
 
     # CALCULATE FINAL LOSS AND ACCURACY
 
-    print("🏆 Final results\n")
+    print("🏆  Final results")
+    print("-----------------\n")
     sleep(delay)
 
     output = train_X
@@ -170,5 +175,5 @@ if __name__ == "__main__":
     print(tabulate(table, tablefmt='fancy_grid'))
     sleep(delay+1)
 
-    print("\n😍 Done. Hope you enjoyed 😊")
+    print("\n😍  Done. Hope you enjoyed 😊")
     sleep(delay)
