@@ -2,13 +2,13 @@ import numpy as np
 from layers import Dense, ReLU
 from helpers import load_mnist, one_hot, softmax, cross_entropy
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     # DEFINE LAYERS
     layers = [
-        Dense(784, 16, "Input Dense"), # input = (784, 1) | output = (16, 1)
-        ReLU("Relu"), # input = (16, 1) | output = (16, 1)
-        Dense(16, 10, "Hidden Dense"), # input = (16, 1) | output = (10, 1)
+        Dense(784, 16, "Hidden Neurons"), # input = (784, BATCH) | output = (16, BATCH)
+        ReLU("Relu"), # input = (16, BATCH) | output = (16, BATCH)
+        Dense(16, 10, "Output"), # input = (16, BATCH) | output = (10, BATCH)
     ]
 
     # LOAD DATA
@@ -20,22 +20,25 @@ if __name__ == "__main__":
     val_X = val_X.T / 255 # (784, valN)
     val_y = one_hot(val_y).T # (10, valN)
 
+    trainN = train_X.shape[-1]
+    valN = val_X.shape[-1]
+
     print(f"Training X:  {train_X.shape}")
     print(f"Training Y:  {train_y.shape}")
     print(f"Val X:  {val_X.shape}")
     print(f"Val Y:  {val_y.shape}")
 
     # PARAMETERS
-    trainN = train_X.shape[-1]
-    valN = val_X.shape[-1]
     BATCH_SIZE = 100
     EPOCHS = 100
+    LR = 0.01
 
     for e in range(1, EPOCHS+1):
+        
+        print(f"Epoch {e}... ", end="")
 
         # TRAINING LOOP (FORWARD PROP, BACK PROP)
 
-        print(f"Epoch {e}... ", end="")
         train_loss = 0
         train_acc = 0
         for i in range(0, trainN, BATCH_SIZE):
@@ -57,9 +60,8 @@ if __name__ == "__main__":
             train_acc += acc
             # back prop
             grad = y_pred - y # derivative of the loss with respect to outputs of last dense layer
-            learning_rate = 0.01
             for layer in layers[::-1]:
-                grad = layer.backward(grad, learning_rate)
+                grad = layer.backward(grad, LR)
         # divide metrics by number of batches
         train_loss = train_loss / ( trainN / BATCH_SIZE ) 
         train_acc = train_acc / ( trainN / BATCH_SIZE ) 
