@@ -65,6 +65,7 @@ if __name__ == "__main__":
     sleep(delay)
     print(f"Learning rate: {LR}")
     print()
+    print()
     sleep(delay)
 
     print("✋  ON YOUR MARKS!")
