@@ -24,7 +24,7 @@ pip install -r requirements.txt
 3. Activate virtual environment.
 4. Install required packages.
 
-# Train the model
+## Train the model
 
 ```
 python main.py
