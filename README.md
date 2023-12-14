@@ -1,6 +1,6 @@
 # nn-from-scratch
 
-**Neural Network from Scratch with NumPy, to solve the MNIST classification challenge.**
+**Neural Network from Scratch with NumPy, to solve the MNIST classification problem.**
 
 # 🤗 Test drive
 
